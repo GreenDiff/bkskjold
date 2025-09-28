@@ -35,8 +35,19 @@ def display_player_row(player_name, player_data, team_color="#28a745"):
             st.image(default_image, width=80)
     
     with col2:
-        st.markdown(f"<div style='padding-top: 25px; font-size: 16px; font-weight: bold; color: {team_color};'>{player_name}</div>", 
-                    unsafe_allow_html=True)
+        # Use theme-adaptive styling that works in both light and dark mode
+        st.markdown(f"""
+        <div style='
+            padding-top: 25px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            color: var(--text-color, {team_color}); 
+            background-color: var(--background-color, rgba(0,0,0,0.05)); 
+            padding: 10px; 
+            border-radius: 5px;
+            border-left: 4px solid {team_color};
+        '>{player_name}</div>
+        """, unsafe_allow_html=True)
 
 
 
@@ -50,7 +61,7 @@ def display_teams_layout(teams, player_dict):
         if teams['team1']:
             for player in teams['team1']:
                 player_data = player_dict.get(player)
-                display_player_row(player, player_data, "#2c3e50")
+                display_player_row(player, player_data, "#1f77b4")
                 st.markdown("---")
         else:
             st.write("Ingen spillere på hold 1")
@@ -60,7 +71,7 @@ def display_teams_layout(teams, player_dict):
         if teams['team2']:
             for player in teams['team2']:
                 player_data = player_dict.get(player)
-                display_player_row(player, player_data, "#000000")
+                display_player_row(player, player_data, "#ff7f0e")
                 st.markdown("---")
         else:
             st.write("Ingen spillere på hold 2")
@@ -70,7 +81,7 @@ def display_teams_layout(teams, player_dict):
         st.markdown("### ⚪ Reserve Spillere")
         for player in teams['remaining']:
             player_data = player_dict.get(player)
-            display_player_row(player, player_data, "#6c757d")
+            display_player_row(player, player_data, "#2ca02c")
             st.markdown("---")
 
 
