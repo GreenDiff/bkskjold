@@ -76,6 +76,49 @@ def display_teams_layout(teams, player_dict):
 
 
 
+def add_player_callback():
+    """Callback to add manual player."""
+    current_input = st.session_state.get(f'new_player_input_{st.session_state.input_counter}', '').strip()
+    if current_input and current_input not in st.session_state.manual_players:
+        st.session_state.manual_players.append(current_input)
+        if current_input not in st.session_state.selected_players:
+            st.session_state.selected_players.append(current_input)
+        st.session_state.input_counter += 1
+
+
+
+def generate_teams_callback():
+    """Callback to generate teams."""
+    selected_players = st.session_state.selected_players
+    if len(selected_players) >= 2:
+        all_players = selected_players.copy()
+        random.shuffle(all_players)
+        team_size = len(all_players) // 2
+        team1 = all_players[:team_size]
+        team2 = all_players[team_size:team_size*2]
+        remaining = all_players[team_size*2:]
+        
+        st.session_state.generated_teams = {
+            'team1': team1,
+            'team2': team2,
+            'remaining': remaining,
+            'team_size': team_size
+        }
+
+def clear_teams_callback():
+    """Callback to clear teams."""
+    st.session_state.generated_teams = None
+
+def clear_all_callback():
+    """Callback to clear everything."""
+    st.session_state.manual_players = []
+    # Get fresh player data
+    member_data = load_member_data()
+    player_dict = get_player_data_dict(member_data)
+    st.session_state.selected_players = list(player_dict.keys())
+    st.session_state.generated_teams = None
+    st.session_state.input_counter += 1
+
 def display_team_selector():
     """Display the team selector page for training."""
     st.title("⚽ Hold Udvælger")
@@ -153,16 +196,7 @@ def display_team_selector():
             )
         with col_add:
             st.write("")  # Space for alignment
-            add_btn = st.button("➕ Tilføj")
-            
-        # Handle add player button click
-        if add_btn:
-            if new_player.strip() and new_player.strip() not in st.session_state.manual_players:
-                st.session_state.manual_players.append(new_player.strip())
-                if new_player.strip() not in st.session_state.selected_players:
-                    st.session_state.selected_players.append(new_player.strip())
-                st.session_state.input_counter += 1
-                st.rerun()
+            st.button("➕ Tilføj", on_click=add_player_callback)
         
         # Display manual players with remove option
         if st.session_state.manual_players:
@@ -173,11 +207,16 @@ def display_team_selector():
                 with col_name:
                     st.write(f"• {player}")
                 with col_remove:
-                    if st.button("🗑️", key=f"remove_{i}", help=f"Fjern {player}"):
-                        st.session_state.manual_players.remove(player)
-                        if player in st.session_state.selected_players:
-                            st.session_state.selected_players.remove(player)
-                        st.rerun()
+                    def make_remove_callback(player_name):
+                        def callback():
+                            if player_name in st.session_state.manual_players:
+                                st.session_state.manual_players.remove(player_name)
+                            if player_name in st.session_state.selected_players:
+                                st.session_state.selected_players.remove(player_name)
+                        return callback
+                    
+                    st.button("🗑️", key=f"remove_{i}", help=f"Fjern {player}",
+                             on_click=make_remove_callback(player))
     
     with col2:
         st.subheader("⚙️ Hold Indstillinger")
@@ -191,22 +230,8 @@ def display_team_selector():
         if total_selected >= 2:
             st.info(f"Hold størrelse: {total_selected // 2} spillere per hold")
             
-            if st.button("🎲 Generer Hold", use_container_width=True, type="primary"):
-                if len(selected_team_members) >= 2:
-                    all_players = selected_team_members.copy()
-                    random.shuffle(all_players)
-                    team_size = len(all_players) // 2
-                    team1 = all_players[:team_size]
-                    team2 = all_players[team_size:team_size*2]
-                    remaining = all_players[team_size*2:]
-                    
-                    st.session_state.generated_teams = {
-                        'team1': team1,
-                        'team2': team2,
-                        'remaining': remaining,
-                        'team_size': team_size
-                    }
-                    st.rerun()
+            st.button("🎲 Generer Hold", use_container_width=True, type="primary",
+                     on_click=generate_teams_callback)
         else:
             st.info("Vælg mindst 2 spillere for at generere hold")
     
@@ -225,27 +250,12 @@ def display_team_selector():
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            if st.button("🔄 Generer Nye Hold", use_container_width=True):
-                if len(selected_team_members) >= 2:
-                    all_players = selected_team_members.copy()
-                    random.shuffle(all_players)
-                    team_size = len(all_players) // 2
-                    team1 = all_players[:team_size]
-                    team2 = all_players[team_size:team_size*2]
-                    remaining = all_players[team_size*2:]
-                    
-                    st.session_state.generated_teams = {
-                        'team1': team1,
-                        'team2': team2,
-                        'remaining': remaining,
-                        'team_size': team_size
-                    }
-                    st.rerun()
+            st.button("🔄 Generer Nye Hold", use_container_width=True,
+                     on_click=generate_teams_callback)
         
         with col2:
-            if st.button("🗑️ Ryd Hold", use_container_width=True):
-                st.session_state.generated_teams = None
-                st.rerun()
+            st.button("🗑️ Ryd Hold", use_container_width=True,
+                     on_click=clear_teams_callback)
         
         with col3:
             # Export teams as text - this one can be inline since it just displays
@@ -268,9 +278,5 @@ def display_team_selector():
     
     # Clear all button
     st.markdown("---")
-    if st.button("🗑️ Ryd Alt", help="Ryd alle valg og generede hold"):
-        st.session_state.manual_players = []
-        st.session_state.selected_players = list(player_dict.keys())
-        st.session_state.generated_teams = None
-        st.session_state.input_counter += 1
-        st.rerun()
+    st.button("🗑️ Ryd Alt", help="Ryd alle valg og generede hold",
+             on_click=clear_all_callback)
