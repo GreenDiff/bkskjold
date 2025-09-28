@@ -109,6 +109,25 @@ def clear_teams_callback():
     """Callback to clear teams."""
     st.session_state.generated_teams = None
 
+def copy_teams_callback():
+    """Callback to copy teams to display."""
+    teams = st.session_state.generated_teams
+    if teams:
+        team_text = f"""⚪ Hold 1:
+{chr(10).join([f"{i}. {player}" for i, player in enumerate(teams['team1'], 1)])}
+
+⚫ Hold 2:
+{chr(10).join([f"{i}. {player}" for i, player in enumerate(teams['team2'], 1)])}"""
+        
+        if teams.get('remaining'):
+            team_text += f"""
+
+⚪ Reserve:
+{chr(10).join([f"{i}. {player}" for i, player in enumerate(teams['remaining'], 1)])}"""
+        
+        st.session_state.team_text_to_display = team_text
+        st.session_state.show_team_text = True
+
 def clear_all_callback():
     """Callback to clear everything."""
     st.session_state.manual_players = []
@@ -258,22 +277,16 @@ def display_team_selector():
                      on_click=clear_teams_callback)
         
         with col3:
-            # Export teams as text - this one can be inline since it just displays
-            if st.button("📋 Kopiér til Clipboard", use_container_width=True):
-                team_text = f"""⚪ Hold 1:
-{chr(10).join([f"{i}. {player}" for i, player in enumerate(teams['team1'], 1)])}
-
-⚫ Hold 2:
-{chr(10).join([f"{i}. {player}" for i, player in enumerate(teams['team2'], 1)])}"""
-                
-                if teams['remaining']:
-                    team_text += f"""
-
-⚪ Reserve:
-{chr(10).join([f"{i}. {player}" for i, player in enumerate(teams['remaining'], 1)])}"""
-                
-                st.code(team_text, language="text")
-                st.success("Hold information vist ovenfor - kopiér manuelt")
+            # Export teams as text with callback
+            st.button("📋 Kopiér til Clipboard", use_container_width=True,
+                     on_click=copy_teams_callback)
+        
+        # Display team text if requested
+        if st.session_state.get('show_team_text', False):
+            st.code(st.session_state.get('team_text_to_display', ''), language="text")
+            st.success("Hold information vist ovenfor - kopiér manuelt")
+            # Clear the display flag
+            st.session_state.show_team_text = False
     
     
     # Clear all button
