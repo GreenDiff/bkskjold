@@ -19,7 +19,17 @@ def calculate_statistics(fines_data, member_data):
     total_players = len(member_data)  # Count all team members, not just those with fines
     total_fines = sum(data['total_fine'] for data in fines_data.values())
     avg_fine = total_fines / total_players if total_players > 0 else 0
-    players_with_fines = sum(1 for data in fines_data.values() if data['total_fine'] > 0)
+    
+    # Count unique players with fines (ensure no duplicates)
+    players_with_fines = len([name for name, data in fines_data.items() if data['total_fine'] > 0])
+    
+    # Debug: Check if there are more players with fines than total players
+    if players_with_fines > total_players:
+        print(f"⚠️  Warning: {players_with_fines} players with fines > {total_players} total players")
+        print(f"Players with fines: {[name for name, data in fines_data.items() if data['total_fine'] > 0]}")
+        print(f"All members: {list(member_data.keys()) if member_data else 'No member data'}")
+        # Cap it to total players as a safety measure
+        players_with_fines = min(players_with_fines, total_players)
     
     return {
         'total_players': total_players,
