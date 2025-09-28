@@ -4,6 +4,8 @@ Intelligent Team Generator
 
 Smart team balancing algorithm that uses historical win rate data to create 
 equally balanced teams based on player performance statistics.
+
+Updated: 2025-09-29 - Latest version with improved balance algorithms
 """
 
 import json
