@@ -2071,5 +2071,93 @@
     "fine_amount": 25,
     "paid": false,
     "created_date": "2025-09-29T01:07:40.247385"
+  },
+  "E7BE93ADF34C4510A4E6C0F695F78115_F4D3760E150B45E5A3602CB07488E681": {
+    "player_id": "F4D3760E150B45E5A3602CB07488E681",
+    "player_name": "Christian H\u00f8jby",
+    "event_id": "E7BE93ADF34C4510A4E6C0F695F78115",
+    "event_name": "Skjold 13 \u2013 S\u00f8nderbro Fight",
+    "event_date": "2025-09-28T11:45:00Z",
+    "fine_type": "missing_event",
+    "fine_amount": 50,
+    "paid": false,
+    "created_date": "2025-09-29T01:23:16.834489"
+  },
+  "E7BE93ADF34C4510A4E6C0F695F78115_2D101EBED91B48A68B09004316A5C663": {
+    "player_id": "2D101EBED91B48A68B09004316A5C663",
+    "player_name": "Jonathan Balsov",
+    "event_id": "E7BE93ADF34C4510A4E6C0F695F78115",
+    "event_name": "Skjold 13 \u2013 S\u00f8nderbro Fight",
+    "event_date": "2025-09-28T11:45:00Z",
+    "fine_type": "missing_event",
+    "fine_amount": 50,
+    "paid": false,
+    "created_date": "2025-09-29T01:23:16.834520"
+  },
+  "E7BE93ADF34C4510A4E6C0F695F78115_2A059EC2138241979A734D06A438A113": {
+    "player_id": "2A059EC2138241979A734D06A438A113",
+    "player_name": "Oscar Pedro",
+    "event_id": "E7BE93ADF34C4510A4E6C0F695F78115",
+    "event_name": "Skjold 13 \u2013 S\u00f8nderbro Fight",
+    "event_date": "2025-09-28T11:45:00Z",
+    "fine_type": "missing_event",
+    "fine_amount": 50,
+    "paid": false,
+    "created_date": "2025-09-29T01:23:16.834525"
+  },
+  "E7BE93ADF34C4510A4E6C0F695F78115_E164B0478B8C419C9D06842BBA994B08": {
+    "player_id": "E164B0478B8C419C9D06842BBA994B08",
+    "player_name": "Michael J\u00f8rgensen",
+    "event_id": "E7BE93ADF34C4510A4E6C0F695F78115",
+    "event_name": "Skjold 13 \u2013 S\u00f8nderbro Fight",
+    "event_date": "2025-09-28T11:45:00Z",
+    "fine_type": "missing_event",
+    "fine_amount": 50,
+    "paid": false,
+    "created_date": "2025-09-29T01:23:16.834529"
+  },
+  "E7BE93ADF34C4510A4E6C0F695F78115_40D5C03D3BAF4186B2DA25AED147A882": {
+    "player_id": "40D5C03D3BAF4186B2DA25AED147A882",
+    "player_name": "William Svendsen",
+    "event_id": "E7BE93ADF34C4510A4E6C0F695F78115",
+    "event_name": "Skjold 13 \u2013 S\u00f8nderbro Fight",
+    "event_date": "2025-09-28T11:45:00Z",
+    "fine_type": "missing_event",
+    "fine_amount": 50,
+    "paid": false,
+    "created_date": "2025-09-29T01:23:16.834533"
+  },
+  "E7BE93ADF34C4510A4E6C0F695F78115_411B69929AFD48EBAE48DC7C4EAC5994": {
+    "player_id": "411B69929AFD48EBAE48DC7C4EAC5994",
+    "player_name": "Tue Tordenst\u00f8vle",
+    "event_id": "E7BE93ADF34C4510A4E6C0F695F78115",
+    "event_name": "Skjold 13 \u2013 S\u00f8nderbro Fight",
+    "event_date": "2025-09-28T11:45:00Z",
+    "fine_type": "missing_event",
+    "fine_amount": 50,
+    "paid": false,
+    "created_date": "2025-09-29T01:23:16.834537"
+  },
+  "E7BE93ADF34C4510A4E6C0F695F78115_3FE878F34BA34184989A1A803C1A49B7": {
+    "player_id": "3FE878F34BA34184989A1A803C1A49B7",
+    "player_name": "Nikolai Kyster Lund",
+    "event_id": "E7BE93ADF34C4510A4E6C0F695F78115",
+    "event_name": "Skjold 13 \u2013 S\u00f8nderbro Fight",
+    "event_date": "2025-09-28T11:45:00Z",
+    "fine_type": "missing_event",
+    "fine_amount": 50,
+    "paid": false,
+    "created_date": "2025-09-29T01:23:16.834540"
+  },
+  "E7BE93ADF34C4510A4E6C0F695F78115_639477F0AB744A5F9705AE380A45051D": {
+    "player_id": "639477F0AB744A5F9705AE380A45051D",
+    "player_name": "Philip Rau-Andersen",
+    "event_id": "E7BE93ADF34C4510A4E6C0F695F78115",
+    "event_name": "Skjold 13 \u2013 S\u00f8nderbro Fight",
+    "event_date": "2025-09-28T11:45:00Z",
+    "fine_type": "missing_event",
+    "fine_amount": 50,
+    "paid": false,
+    "created_date": "2025-09-29T01:23:16.834543"
   }
 }

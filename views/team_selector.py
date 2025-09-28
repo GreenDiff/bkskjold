@@ -554,9 +554,9 @@ def display_team_selector():
         if total_selected >= 2:
             st.info(f"Hold størrelse: {total_selected // 2} spillere per hold")
             
-            st.info("🧠 Bruger intelligent balance baseret på sejrsrate historik")
+            st.info("🧠 Bruger intelligent balance baseret på sejrsrate historik (v2.0 - Opdateret 29/9 2025)")
             
-            st.button("🧠 Generer Balancerede Hold", use_container_width=True, type="primary",
+            st.button("🧠 Generer Balancerede Hold (v2.0)", use_container_width=True, type="primary",
                      on_click=generate_teams_callback)
         else:
             st.info("Vælg mindst 2 spillere for at generere hold")
