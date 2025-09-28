@@ -50,7 +50,7 @@ def display_teams_layout(teams, player_dict):
         if teams['team1']:
             for player in teams['team1']:
                 player_data = player_dict.get(player)
-                display_player_row(player, player_data, "#2c3e50")
+                display_player_row(player, player_data, "#2c3e5007")
                 st.markdown("---")
         else:
             st.write("Ingen spillere på hold 1")
@@ -60,7 +60,8 @@ def display_teams_layout(teams, player_dict):
         if teams['team2']:
             for player in teams['team2']:
                 player_data = player_dict.get(player)
-                display_player_row(player, player_data, "#000000")
+                display_player_row(player, player_data, "#00000005")
+                st.markdown("---")
         else:
             st.write("Ingen spillere på hold 2")
     

@@ -46,8 +46,7 @@ def main():
     
     # Footer
     st.sidebar.markdown("---")
-    st.sidebar.markdown("⚽ **Fodboldhold Bødestyring**")
-    st.sidebar.markdown("Bygget med Streamlit & Spond API")
+
 
 
 if __name__ == "__main__":
