@@ -70,7 +70,7 @@ def display_teams_layout(teams, player_dict):
         st.markdown("### ⚪ Reserve Spillere")
         for player in teams['remaining']:
             player_data = player_dict.get(player)
-            display_player_row(player, player_data, "#6c757d")
+            display_player_row(player, player_data, "#ffffff")
             st.markdown("---")
 
 
@@ -255,10 +255,10 @@ def display_team_selector():
         with col3:
             # Export teams as text
             if st.button("📋 Kopiér til Clipboard", use_container_width=True):
-                team_text = f"""🔴 Hold 1:
+                team_text = f"""⚪ Hold 1:
 {chr(10).join([f"{i}. {player}" for i, player in enumerate(teams['team1'], 1)])}
 
-🔵 Hold 2:
+⚫ Hold 2:
 {chr(10).join([f"{i}. {player}" for i, player in enumerate(teams['team2'], 1)])}"""
                 
                 if teams['remaining']:
