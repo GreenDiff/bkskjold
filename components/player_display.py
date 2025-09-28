@@ -58,12 +58,13 @@ def display_player_stats(member_fines, total_fine):
     """Display player statistics below the fine bar."""
     no_show_count = member_fines.get('no_show_count', 0)
     late_response_count = member_fines.get('late_response_count', 0)
+    training_loss_count = member_fines.get('training_loss_count', 0)
     unpaid_amount = member_fines.get('unpaid_amount', 0)
     paid_amount = total_fine - unpaid_amount
     
     st.markdown(f"""
     <div style="font-size: 12px; color: #666; margin-top: 5px;">
-        🚫 Udeblivelser: {no_show_count} | ⏰ Sene: {late_response_count} | 
+        🚫 Udeblivelser: {no_show_count} | ⏰ Sene: {late_response_count} | 🏆 Træningskamp tab: {training_loss_count} | 
         💰 Betalt: {paid_amount} kr | 🔴 Ubetalt: {unpaid_amount} kr
     </div>
     """, unsafe_allow_html=True)
@@ -86,7 +87,13 @@ def display_player_fines_section(fines_data, member_data):
             total_fine = member_fines.get('total_fine', 0)
         else:
             # Player has no fines
-            member_fines = {'total_fine': 0, 'no_show_count': 0, 'late_response_count': 0}
+            member_fines = {
+                'total_fine': 0, 
+                'no_show_count': 0, 
+                'late_response_count': 0, 
+                'training_loss_count': 0,
+                'unpaid_amount': 0
+            }
             total_fine = 0
         
         players_with_data.append({

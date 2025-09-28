@@ -11,6 +11,7 @@ from views.dashboard import display_dashboard
 from views.detailed_fines import display_detailed_fines  
 from views.admin_panel import display_admin_panel
 from views.team_selector import display_team_selector
+from views.training_history import display_training_history
 
 # Configure Streamlit page
 st.set_page_config(
@@ -31,7 +32,7 @@ def main():
     st.sidebar.title("Navigation")
     page = st.sidebar.radio(
         "Vælg en side:",
-        ["Dashboard", "Detaljerede Bøder", "Hold Udvælger", "Admin Panel"]
+        ["Dashboard", "Detaljerede Bøder", "Hold Udvælger", "Træningshistorik", "Admin Panel"]
     )
     
     # Display selected page
@@ -41,6 +42,8 @@ def main():
         display_detailed_fines()
     elif page == "Hold Udvælger":
         display_team_selector()
+    elif page == "Træningshistorik":
+        display_training_history()
     elif page == "Admin Panel":
         display_admin_panel()
     

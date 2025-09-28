@@ -45,7 +45,16 @@ def display_detailed_fines():
             
             # Format datetime columns
             if 'startTimestamp' in events_df.columns:
-                events_df['Date'] = pd.to_datetime(events_df['startTimestamp']).dt.strftime('%Y-%m-%d %H:%M')
+                try:
+                    # Try ISO8601 format first (handles microseconds)
+                    events_df['Date'] = pd.to_datetime(events_df['startTimestamp'], format='ISO8601').dt.strftime('%Y-%m-%d %H:%M')
+                except:
+                    try:
+                        # Fallback to mixed format parsing
+                        events_df['Date'] = pd.to_datetime(events_df['startTimestamp'], format='mixed').dt.strftime('%Y-%m-%d %H:%M')
+                    except:
+                        # Last resort - use string representation
+                        events_df['Date'] = events_df['startTimestamp'].astype(str)
             
             # Display table
             st.dataframe(

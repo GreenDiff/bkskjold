@@ -83,6 +83,73 @@ class SpondIntegration:
         except Exception as e:
             print(f"Error fetching members: {e}")
             return []
+    
+    async def get_future_events(self, days_ahead: int = 7) -> List[Dict]:
+        """Fetch future team events."""
+        if not self.session:
+            await self.initialize()
+            
+        # Calculate date range for future events
+        start_date = datetime.now()
+        end_date = start_date + timedelta(days=days_ahead)
+        
+        try:
+            events = await self.session.get_events(
+                group_id=app_config.GROUP_ID,
+                min_start=start_date,
+                max_start=end_date,
+                max_events=50
+            )
+            return events or []
+        except Exception as e:
+            print(f"Error fetching future events: {e}")
+            return []
+    
+    async def get_next_training_accepted_players(self) -> List[str]:
+        """Get list of player names who have accepted the next training session."""
+        if not self.session:
+            await self.initialize()
+            
+        try:
+            # Get future events
+            future_events = await self.get_future_events(days_ahead=7)
+            
+            # Get team members to map IDs to names
+            members = await self.get_team_members()
+            member_map = {member['id']: f"{member.get('firstName', '')} {member.get('lastName', '')}".strip() 
+                         for member in members}
+            
+            # Find the next training session (look for "træning" or "training" in event name)
+            next_training = None
+            for event in sorted(future_events, key=lambda x: x.get('startTimestamp', '')):
+                event_name = event.get('heading', '').lower()
+                if 'træning' in event_name or 'training' in event_name:
+                    next_training = event
+                    break
+            
+            if not next_training:
+                print("No upcoming training session found")
+                return []
+            
+            print(f"Found next training: {next_training.get('heading', 'Unknown')} at {next_training.get('startTimestamp', 'Unknown time')}")
+            
+            # Get accepted players from the training event
+            responses = next_training.get('responses', {})
+            accepted_ids = responses.get('acceptedIds', [])
+            
+            # Convert IDs to names
+            accepted_players = []
+            for player_id in accepted_ids:
+                player_name = member_map.get(player_id, f"Unknown ({player_id})")
+                if player_name and player_name != f"Unknown ({player_id})":
+                    accepted_players.append(player_name)
+            
+            print(f"Found {len(accepted_players)} players who accepted the training")
+            return accepted_players
+            
+        except Exception as e:
+            print(f"Error fetching training accepted players: {e}")
+            return []
 
 
 class FinesCalculator:
@@ -293,6 +360,7 @@ class FinesCalculator:
                     'unpaid_amount': 0,
                     'no_show_count': 0,
                     'late_response_count': 0,
+                    'training_loss_count': 0,
                     'events': []
                 }
             
@@ -307,6 +375,10 @@ class FinesCalculator:
             fine_type = fine.get('fine_type', 'missing_event')
             if fine_type == 'no_response_24h':
                 processed[player_name]['late_response_count'] += 1
+            elif fine_type == 'training_loss':
+                if 'training_loss_count' not in processed[player_name]:
+                    processed[player_name]['training_loss_count'] = 0
+                processed[player_name]['training_loss_count'] += 1
             else:
                 processed[player_name]['no_show_count'] += 1
             
