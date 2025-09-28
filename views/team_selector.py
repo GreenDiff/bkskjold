@@ -164,17 +164,25 @@ def display_team_selector():
         # Display manual players with remove option
         if st.session_state.manual_players:
             st.write("**Eksterne Spillere:**")
-            for i, player in enumerate(st.session_state.manual_players):
+            
+            # Check if any player should be removed (using unique keys based on player name)
+            player_to_remove = None
+            for player in st.session_state.manual_players:
                 col_name, col_remove = st.columns([4, 1])
                 with col_name:
                     st.write(f"• {player}")
                 with col_remove:
-                    if st.button("🗑️", key=f"remove_{i}", help=f"Fjern {player}"):
-                        st.session_state.manual_players.remove(player)
-                        # Also remove from selected players
-                        if player in st.session_state.selected_players:
-                            st.session_state.selected_players.remove(player)
-                        st.rerun()
+                    if st.button("🗑️", key=f"remove_{player}", help=f"Fjern {player}"):
+                        player_to_remove = player
+                        break
+            
+            # Remove the player if one was selected
+            if player_to_remove:
+                st.session_state.manual_players.remove(player_to_remove)
+                # Also remove from selected players
+                if player_to_remove in st.session_state.selected_players:
+                    st.session_state.selected_players.remove(player_to_remove)
+                st.rerun()
     
     with col2:
         st.subheader("⚙️ Hold Indstillinger")
