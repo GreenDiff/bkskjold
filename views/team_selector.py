@@ -17,26 +17,26 @@ def get_player_data_dict(member_data):
 
 
 def display_player_row(player_name, player_data, team_color="#28a745"):
-    """Display a player in a row with photo and name."""
-    col1, col2 = st.columns([1, 4])
+    """Display a player in a compact row with small photo and name."""
+    col1, col2 = st.columns([1, 5])
     
     with col1:
         if player_data:
             profile_image = player_data.get('profilePicture', '')
             if profile_image:
-                st.image(profile_image, width=80)
+                st.image(profile_image, width=40)
             else:
                 # Default football player image for team members without photos
                 default_image = "https://i2-prod.birminghammail.co.uk/article10620537.ece/ALTERNATES/s1200c/Obese-Manchester-united-supporter.jpg"
-                st.image(default_image, width=80)
+                st.image(default_image, width=40)
         else:
             # For manual players - use same default as team members without photos
             default_image = "https://i2-prod.birminghammail.co.uk/article10620537.ece/ALTERNATES/s1200c/Obese-Manchester-united-supporter.jpg"
-            st.image(default_image, width=80)
+            st.image(default_image, width=40)
     
     with col2:
-        # Use larger text that automatically adapts to theme
-        st.markdown(f"### {player_name}")
+        # Use smaller text for more compact display
+        st.markdown(f"**{player_name}**")
 
 
 
@@ -51,7 +51,6 @@ def display_teams_layout(teams, player_dict):
             for player in teams['team1']:
                 player_data = player_dict.get(player)
                 display_player_row(player, player_data, "#1f77b4")
-                st.markdown("---")
         else:
             st.write("Ingen spillere på hold 1")
     
@@ -61,7 +60,6 @@ def display_teams_layout(teams, player_dict):
             for player in teams['team2']:
                 player_data = player_dict.get(player)
                 display_player_row(player, player_data, "#ff7f0e")
-                st.markdown("---")
         else:
             st.write("Ingen spillere på hold 2")
     
@@ -71,7 +69,6 @@ def display_teams_layout(teams, player_dict):
         for player in teams['remaining']:
             player_data = player_dict.get(player)
             display_player_row(player, player_data, "#2ca02c")
-            st.markdown("---")
 
 
 
