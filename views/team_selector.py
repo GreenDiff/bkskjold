@@ -93,6 +93,8 @@ def display_team_selector():
         st.session_state.generated_teams = None
     if 'input_counter' not in st.session_state:
         st.session_state.input_counter = 0
+    if 'remove_player_flag' not in st.session_state:
+        st.session_state.remove_player_flag = None
     
     # Clean up session state - remove any invalid players that no longer exist
     team_members = list(player_dict.keys())
@@ -161,28 +163,29 @@ def display_team_selector():
                     st.session_state.input_counter += 1
                     st.rerun()
         
+        # Handle player removal first (before displaying)
+        if st.session_state.remove_player_flag:
+            player_to_remove = st.session_state.remove_player_flag
+            if player_to_remove in st.session_state.manual_players:
+                st.session_state.manual_players.remove(player_to_remove)
+                # Also remove from selected players
+                if player_to_remove in st.session_state.selected_players:
+                    st.session_state.selected_players.remove(player_to_remove)
+            st.session_state.remove_player_flag = None
+            st.rerun()
+        
         # Display manual players with remove option
         if st.session_state.manual_players:
             st.write("**Eksterne Spillere:**")
             
-            # Check if any player should be removed (using unique keys based on player name)
-            player_to_remove = None
             for player in st.session_state.manual_players:
                 col_name, col_remove = st.columns([4, 1])
                 with col_name:
                     st.write(f"• {player}")
                 with col_remove:
                     if st.button("🗑️", key=f"remove_{player}", help=f"Fjern {player}"):
-                        player_to_remove = player
-                        break
-            
-            # Remove the player if one was selected
-            if player_to_remove:
-                st.session_state.manual_players.remove(player_to_remove)
-                # Also remove from selected players
-                if player_to_remove in st.session_state.selected_players:
-                    st.session_state.selected_players.remove(player_to_remove)
-                st.rerun()
+                        st.session_state.remove_player_flag = player
+                        st.rerun()
     
     with col2:
         st.subheader("⚙️ Hold Indstillinger")
