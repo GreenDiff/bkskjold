@@ -35,11 +35,8 @@ def display_player_row(player_name, player_data, team_color="#28a745"):
             st.image(default_image, width=80)
     
     with col2:
-        # Use Streamlit's native text that automatically adapts to theme
-        st.markdown(f"**{player_name}**")
-        # Add a small colored indicator for team distinction
-        st.markdown(f'<div style="width: 20px; height: 3px; background-color: {team_color}; margin-top: -10px;"></div>', 
-                    unsafe_allow_html=True)
+        # Use larger text that automatically adapts to theme
+        st.markdown(f"### {player_name}")
 
 
 
