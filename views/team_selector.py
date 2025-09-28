@@ -93,8 +93,8 @@ def display_team_selector():
         st.session_state.generated_teams = None
     if 'input_counter' not in st.session_state:
         st.session_state.input_counter = 0
-    if 'remove_player_flag' not in st.session_state:
-        st.session_state.remove_player_flag = None
+    if 'button_counter' not in st.session_state:
+        st.session_state.button_counter = 0
     
     # Clean up session state - remove any invalid players that no longer exist
     team_members = list(player_dict.keys())
@@ -153,7 +153,7 @@ def display_team_selector():
             )
         with col_add:
             st.write("")  # Space for alignment
-            if st.button("➕ Tilføj", key="add_player"):
+            if st.button("➕ Tilføj", key=f"add_player_{st.session_state.button_counter}"):
                 if new_player.strip() and new_player.strip() not in st.session_state.manual_players:
                     st.session_state.manual_players.append(new_player.strip())
                     # Also add to selected players automatically
@@ -161,31 +161,28 @@ def display_team_selector():
                         st.session_state.selected_players.append(new_player.strip())
                     # Clear the input field by incrementing counter (creates new widget)
                     st.session_state.input_counter += 1
-                    st.rerun()
-        
-        # Handle player removal first (before displaying)
-        if st.session_state.remove_player_flag:
-            player_to_remove = st.session_state.remove_player_flag
-            if player_to_remove in st.session_state.manual_players:
-                st.session_state.manual_players.remove(player_to_remove)
-                # Also remove from selected players
-                if player_to_remove in st.session_state.selected_players:
-                    st.session_state.selected_players.remove(player_to_remove)
-            st.session_state.remove_player_flag = None
-            st.rerun()
+                    st.session_state.button_counter += 1
         
         # Display manual players with remove option
         if st.session_state.manual_players:
             st.write("**Eksterne Spillere:**")
             
-            for player in st.session_state.manual_players:
+            players_to_remove = []
+            for i, player in enumerate(st.session_state.manual_players):
                 col_name, col_remove = st.columns([4, 1])
                 with col_name:
                     st.write(f"• {player}")
                 with col_remove:
-                    if st.button("🗑️", key=f"remove_{player}", help=f"Fjern {player}"):
-                        st.session_state.remove_player_flag = player
-                        st.rerun()
+                    if st.button("🗑️", key=f"remove_{player}_{st.session_state.button_counter}_{i}", help=f"Fjern {player}"):
+                        players_to_remove.append(player)
+                        st.session_state.button_counter += 1
+            
+            # Remove players outside the loop
+            for player in players_to_remove:
+                if player in st.session_state.manual_players:
+                    st.session_state.manual_players.remove(player)
+                if player in st.session_state.selected_players:
+                    st.session_state.selected_players.remove(player)
     
     with col2:
         st.subheader("⚙️ Hold Indstillinger")
@@ -199,7 +196,7 @@ def display_team_selector():
         if total_selected >= 2:
             st.info(f"Hold størrelse: {total_selected // 2} spillere per hold")
             
-            if st.button("🎲 Generer Hold", use_container_width=True, type="primary"):
+            if st.button("🎲 Generer Hold", use_container_width=True, type="primary", key=f"generate_{st.session_state.button_counter}"):
                 all_players = selected_team_members  # Manual players are now included in selected_team_members
                 
                 if len(all_players) >= 2:
@@ -218,7 +215,7 @@ def display_team_selector():
                         'remaining': remaining,
                         'team_size': team_size
                     }
-                    st.rerun()
+                    st.session_state.button_counter += 1
                 else:
                     st.error("Mindst 2 spillere nødvendig!")
         else:
@@ -239,7 +236,7 @@ def display_team_selector():
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            if st.button("🔄 Generer Nye Hold", use_container_width=True):
+            if st.button("🔄 Generer Nye Hold", use_container_width=True, key=f"regenerate_{st.session_state.button_counter}"):
                 # Regenerate with same players - split in half
                 all_players = selected_team_members  # Manual players are now included in selected_team_members
                 if len(all_players) >= 2:
@@ -256,16 +253,16 @@ def display_team_selector():
                         'remaining': remaining,
                         'team_size': team_size
                     }
-                    st.rerun()
+                    st.session_state.button_counter += 1
         
         with col2:
-            if st.button("🗑️ Ryd Hold", use_container_width=True):
+            if st.button("🗑️ Ryd Hold", use_container_width=True, key=f"clear_teams_{st.session_state.button_counter}"):
                 st.session_state.generated_teams = None
-                st.rerun()
+                st.session_state.button_counter += 1
         
         with col3:
             # Export teams as text
-            if st.button("📋 Kopiér til Clipboard", use_container_width=True):
+            if st.button("📋 Kopiér til Clipboard", use_container_width=True, key=f"copy_{st.session_state.button_counter}"):
                 team_text = f"""⚪ Hold 1:
 {chr(10).join([f"{i}. {player}" for i, player in enumerate(teams['team1'], 1)])}
 
@@ -284,10 +281,10 @@ def display_team_selector():
     
     # Clear all button
     st.markdown("---")
-    if st.button("🗑️ Ryd Alt", help="Ryd alle valg og generede hold"):
+    if st.button("🗑️ Ryd Alt", help="Ryd alle valg og generede hold", key=f"clear_all_{st.session_state.button_counter}"):
         st.session_state.manual_players = []
         st.session_state.selected_players = list(player_dict.keys())  # Reset to all team players selected
         st.session_state.generated_teams = None
         # Clear input field by incrementing counter
         st.session_state.input_counter += 1
-        st.rerun()
+        st.session_state.button_counter += 1
