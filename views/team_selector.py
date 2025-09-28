@@ -50,7 +50,7 @@ def display_teams_layout(teams, player_dict):
         if teams['team1']:
             for player in teams['team1']:
                 player_data = player_dict.get(player)
-                display_player_row(player, player_data, "#2c3e5007")
+                display_player_row(player, player_data, "#2c3e50")
                 st.markdown("---")
         else:
             st.write("Ingen spillere på hold 1")
@@ -60,7 +60,7 @@ def display_teams_layout(teams, player_dict):
         if teams['team2']:
             for player in teams['team2']:
                 player_data = player_dict.get(player)
-                display_player_row(player, player_data, "#00000005")
+                display_player_row(player, player_data, "#000000")
                 st.markdown("---")
         else:
             st.write("Ingen spillere på hold 2")
@@ -70,7 +70,7 @@ def display_teams_layout(teams, player_dict):
         st.markdown("### ⚪ Reserve Spillere")
         for player in teams['remaining']:
             player_data = player_dict.get(player)
-            display_player_row(player, player_data, "#ffffff")
+            display_player_row(player, player_data, "#6c757d")
             st.markdown("---")
 
 
@@ -270,26 +270,6 @@ def display_team_selector():
                 st.code(team_text, language="text")
                 st.success("Hold information vist ovenfor - kopiér manuelt")
     
-    # Instructions
-    with st.expander("ℹ️ Sådan bruges Hold Udvælgeren"):
-        st.markdown("""
-        **Trin 1:** Fravælg spillere der ikke er tilgængelige (alle er valgt som standard)  
-        **Trin 2:** Tilføj eventuelle externe spillere manuelt  
-        **Trin 3:** Klik "🎲 Generer Hold" for at oprette tilfældige hold  
-        
-        **Hold Layout:**
-        - Hold opdeles automatisk i to lige store hold
-        - Hold 1 (rød) og Hold 2 (blå) vist side om side
-        - Spillerfotos og navne vist i rækker
-        - Eventuelle ekstra spillere vises som reserve
-        
-        **Tips:**
-        - Alle holdmedlemmer er automatisk valgt - fravælg kun de utilgængelige
-        - Hold opdeles automatisk 50/50 baseret på antal spillere
-        - Du kan regenerere holdene flere gange med de samme spillere
-        - Eksterne spillere får standard placeholder billede
-        - Brug "Kopiér til Clipboard" for at dele holdene
-        """)
     
     # Clear all button
     st.markdown("---")
