@@ -5,6 +5,7 @@ import json
 import os
 from datetime import datetime
 import pandas as pd
+from utils.github_storage import auto_backup_on_change
 
 
 def load_training_matches():
@@ -29,8 +30,12 @@ def complete_pending_match(match_id, winning_team):
                 match['status'] = 'completed'
                 match['completed_at'] = datetime.now().isoformat()
                 
+                # Save locally first
                 with open('training_matches.json', 'w', encoding='utf-8') as f:
                     json.dump(matches, f, indent=2, ensure_ascii=False)
+                
+                # Auto-backup to GitHub
+                auto_backup_on_change(matches, 'training_matches.json', 'Kamp resultat opdateret')
                 
                 return True
         

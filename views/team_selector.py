@@ -6,6 +6,7 @@ import json
 import os
 from datetime import datetime
 from utils.data_loader import load_member_data, get_training_accepted_players, initialize_fines_calculator
+from utils.github_storage import save_training_matches, auto_backup_on_change
 from intelligent_team_generator import IntelligentTeamGenerator
 
 
@@ -53,9 +54,13 @@ def save_training_match(team1, team2, winning_team, match_date=None):
         
         matches.append(match_data)
         
+        # Save locally first
         with open('training_matches.json', 'w', encoding='utf-8') as f:
             json.dump(matches, f, indent=2, ensure_ascii=False)
-            
+        
+        # Auto-backup to GitHub
+        auto_backup_on_change(matches, 'training_matches.json', 'Ny træningskamp gemt')
+        
         return True
     except Exception as e:
         st.error(f"Fejl ved gemning af træningskamp: {e}")
@@ -84,9 +89,13 @@ def save_pending_match(team1, team2):
         
         matches.append(match_data)
         
+        # Save locally first
         with open('training_matches.json', 'w', encoding='utf-8') as f:
             json.dump(matches, f, indent=2, ensure_ascii=False)
-            
+        
+        # Auto-backup to GitHub
+        auto_backup_on_change(matches, 'training_matches.json', 'Ny ventende kamp oprettet')
+        
         return match_data['match_id']
     except Exception as e:
         st.error(f"Fejl ved gemning af ventende kamp: {e}")
