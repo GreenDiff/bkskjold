@@ -299,7 +299,24 @@ class FinesCalculator:
     
     def update_fines_for_events(self, events: List[Dict], members: List[Dict]):
         """Update fines data for all events."""
+        # Parse cutoff date from config
+        cutoff_date = datetime.strptime(app_config.FINES_CUTOFF_DATE, '%Y-%m-%d')
+        
         for event in events:
+            # Check if event is after cutoff date
+            event_start = event.get('startTimestamp', '')
+            if event_start:
+                try:
+                    event_date = datetime.fromisoformat(event_start.replace('Z', '+00:00'))
+                    # Only process events on or after cutoff date
+                    if event_date.date() < cutoff_date.date():
+                        continue  # Skip this event - it's before our cutoff date
+                except (ValueError, TypeError):
+                    print(f"Warning: Could not parse event date '{event_start}' for event {event.get('id')}")
+                    continue  # Skip events with invalid dates
+            else:
+                continue  # Skip events without start timestamp
+            
             event_id = event['id']
             event_fines = self.calculate_event_fines(event, members)
             

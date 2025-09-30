@@ -11,7 +11,7 @@ from components.player_display import display_player_fines_section
 def display_dashboard():
     """Display the main dashboard."""
     st.title("⚽ BK Skjolds Bødekasse")
-    
+        
     # Sync button
     col1, col2 = st.columns([3, 1])
     with col2:

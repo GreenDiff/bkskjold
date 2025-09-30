@@ -3,7 +3,11 @@ SPOND_USERNAME = 'linusjb@gmail.com'
 SPOND_PASSWORD = 'Nusnus88!'
 GROUP_ID = '93B5A75C60B94F27BD74BBF8AC03E91C'
 
-# Fine amounts (in your currency)
+# Only create fines for events from this date and onwards (YYYY-MM-DD format)
+# Events before this date will be ignored when syncing data
+FINES_CUTOFF_DATE = '2025-09-30'
+
+# Fine amounts
 FINE_MISSING_TRAINING = 50
 FINE_MISSING_MATCH = 100
 FINE_LATE_RESPONSE = 25  # Fine for no response within 24 hours of event
