@@ -142,10 +142,11 @@
       "Lucas Thierry-Carstensen",
       "Lucas Johan Boesen"
     ],
-    "winning_team": null,
+    "winning_team": 2,
     "created_at": "2025-09-30T15:49:12.513306",
     "match_id": "pending_20250930_154912_513338",
-    "status": "pending"
+    "status": "completed",
+    "completed_at": "2025-09-30T15:49:24.542589"
   },
   {
     "date": "2025-09-30T15:49:15.881083",
