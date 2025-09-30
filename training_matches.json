@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "date": "2025-09-30T14:01:58.680582",
+    "team1": [
+      "Magnus Brønd Rasmussen",
+      "Nicklas Palmelund",
+      "Alexander Frost"
+    ],
+    "team2": [
+      "Lucas Johan Boesen",
+      "Oscar Pedro",
+      "Linus 2100"
+    ],
+    "winning_team": null,
+    "created_at": "2025-09-30T14:01:58.680582",
+    "match_id": "pending_20250930_140158_680618",
+    "status": "pending"
+  }
+]
