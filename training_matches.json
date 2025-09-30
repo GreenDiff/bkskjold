@@ -33,5 +33,22 @@
     "created_at": "2025-09-30T14:18:29.695391",
     "match_id": "pending_20250930_141829_695439",
     "status": "pending"
+  },
+  {
+    "date": "2025-09-30T14:18:34.510748",
+    "team1": [
+      "Linus 2100",
+      "Alexander Frost",
+      "Lucas Johan Boesen"
+    ],
+    "team2": [
+      "Oscar Pedro",
+      "Nicklas Palmelund",
+      "Magnus Brønd Rasmussen"
+    ],
+    "winning_team": null,
+    "created_at": "2025-09-30T14:18:34.510748",
+    "match_id": "pending_20250930_141834_510787",
+    "status": "pending"
   }
 ]
