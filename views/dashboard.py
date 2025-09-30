@@ -10,7 +10,7 @@ from components.player_display import display_player_fines_section
 
 def display_dashboard():
     """Display the main team management dashboard with charts and tables only."""
-    st.title(" BK Skjolds - Alexandras Træningshold")
+    st.title(" BK Skjold - Alexandras Træningshold")
     
     # Sync button
     col1, col2, col3 = st.columns([3, 2, 1])
