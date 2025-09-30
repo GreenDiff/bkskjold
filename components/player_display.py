@@ -70,8 +70,8 @@ def display_player_stats(member_fines, total_fine):
     """, unsafe_allow_html=True)
 
 
-def display_player_fines_section(fines_data, member_data):
-    """Display the complete player fines section."""
+def display_player_fines_section(fines_data, member_data, enable_click=False):
+    """Display the complete player fines section with optional click navigation."""
     if not member_data:
         st.warning("Ingen medlemsdata tilgængelige.")
         return
@@ -106,20 +106,43 @@ def display_player_fines_section(fines_data, member_data):
     players_with_data.sort(key=lambda x: x['total_fine'], reverse=True)
     
     # Display sorted players
-    for player_data in players_with_data:
+    for i, player_data in enumerate(players_with_data):
         member = player_data['member']
         member_fines = player_data['member_fines']
         total_fine = player_data['total_fine']
         
-        col1, col2 = st.columns([1, 4])
+        # Create a clickable container if enable_click is True
+        if enable_click:
+            # Use a button that spans the entire player section
+            member_id = member.get('id', '')
+            if st.button(
+                f"👤 {member.get('firstName', 'Unknown')} {member.get('lastName', '')} - {total_fine} kr",
+                key=f"player_click_{member_id}_{i}",
+                use_container_width=True,
+                help="Klik for at se detaljeret bødehistorik"
+            ):
+                st.session_state.selected_player_id = member_id
+                st.rerun()
         
-        with col1:
-            display_player_profile_image(member)
-        
-        with col2:
-            # Member name and stats
-            name = member.get('firstName', 'Unknown') + ' ' + member.get('lastName', '')
+        # Display player info in a container
+        with st.container():
+            col1, col2 = st.columns([1, 4])
             
-            st.markdown(f"### {name}")
-            display_player_fine_bar(member_fines, total_fine)
-            display_player_stats(member_fines, total_fine)
+            with col1:
+                display_player_profile_image(member)
+            
+            with col2:
+                # Member name and stats
+                name = member.get('firstName', 'Unknown') + ' ' + member.get('lastName', '')
+                
+                if not enable_click:  # Only show as header if not clickable
+                    st.markdown(f"### {name}")
+                else:
+                    st.markdown(f"**{name}**")
+                    
+                display_player_fine_bar(member_fines, total_fine)
+                display_player_stats(member_fines, total_fine)
+        
+        # Add some spacing between players
+        if enable_click:
+            st.markdown("---")

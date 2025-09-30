@@ -1,0 +1,14 @@
+{
+  "gult_kort": {
+    "name": "Gult kort",
+    "amount": 50,
+    "description": "",
+    "created_date": "2025-09-30 18:31"
+  },
+  "for_sent_til_kamp": {
+    "name": "For sent til kamp",
+    "amount": 50,
+    "description": "",
+    "created_date": "2025-09-30 18:32"
+  }
+}

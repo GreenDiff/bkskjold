@@ -32,13 +32,13 @@ def main():
     st.sidebar.title("Navigation")
     page = st.sidebar.radio(
         "Vælg en side:",
-        ["Dashboard", "Detaljerede Bøder", "Hold Udvælger", "Træningshistorik", "Admin Panel"]
+        ["Dashboard", "Bødeoversigt", "Hold Udvælger", "Træningshistorik", "Admin Panel"]
     )
     
     # Display selected page
     if page == "Dashboard":
         display_dashboard()
-    elif page == "Detaljerede Bøder":
+    elif page == "Bødeoversigt":
         display_detailed_fines()
     elif page == "Hold Udvælger":
         display_team_selector()

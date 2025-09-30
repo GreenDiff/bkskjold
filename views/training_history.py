@@ -282,10 +282,10 @@ def display_training_history():
             # Color code the win rates
             def color_win_rate(val):
                 rate = float(val.replace('%', ''))
-                if rate >= 70:
+                if rate >= 51:
                     return 'background-color: #28a745; color: white'
-                elif rate >= 50:
-                    return 'background-color: #ffc107; color: black'
+                elif rate == 50:
+                    return 'background-color: #023E8A; color: white'
                 else:
                     return 'background-color: #dc3545; color: white'
             
