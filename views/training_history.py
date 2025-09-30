@@ -45,6 +45,32 @@ def complete_pending_match(match_id, winning_team):
         return False
 
 
+def delete_pending_match(match_id):
+    """Delete a pending match by match_id."""
+    try:
+        matches = load_training_matches()
+        
+        # Find and remove the match with the given ID
+        original_length = len(matches)
+        matches = [match for match in matches if match.get('match_id') != match_id]
+        
+        # Check if a match was actually removed
+        if len(matches) < original_length:
+            # Save locally first
+            with open('training_matches.json', 'w', encoding='utf-8') as f:
+                json.dump(matches, f, indent=2, ensure_ascii=False)
+            
+            # Auto-backup to GitHub
+            auto_backup_on_change(matches, 'training_matches.json', 'Ventende kamp slettet')
+            
+            return True
+        
+        return False
+    except Exception as e:
+        st.error(f"Fejl ved sletning af ventende kamp: {e}")
+        return False
+
+
 def add_training_fines_from_history(losing_players, reason):
     """Add training fines when completing a match from history."""
     from utils.data_loader import initialize_fines_calculator
@@ -119,9 +145,9 @@ def display_training_history():
                         st.markdown("Ingen spillere registreret")
                 
                 st.markdown("---")
-                st.markdown("**Vælg vinder:**")
+                st.markdown("**Vælg handling:**")
                 
-                col_btn1, col_btn2 = st.columns(2)
+                col_btn1, col_btn2, col_btn3 = st.columns([2, 2, 1])
                 
                 with col_btn1:
                     unique_key_1 = f"team1_wins_{match.get('match_id')}_{i}"
@@ -146,6 +172,38 @@ def display_training_history():
                             st.rerun()
                         else:
                             st.error("❌ Fejl ved registrering af resultat")
+                
+                with col_btn3:
+                    # Add delete functionality with confirmation
+                    delete_key = f"delete_{match.get('match_id')}_{i}"
+                    if st.button("🗑️ Slet", key=delete_key, type="secondary"):
+                        # Store the match_id to delete in session state for confirmation
+                        st.session_state[f"confirm_delete_{match.get('match_id')}"] = True
+                        st.rerun()
+                    
+                    # Show confirmation if delete was clicked
+                    if st.session_state.get(f"confirm_delete_{match.get('match_id')}", False):
+                        st.warning("⚠️ Er du sikker på at du vil slette denne ventende kamp?")
+                        col_confirm, col_cancel = st.columns(2)
+                        
+                        with col_confirm:
+                            confirm_key = f"confirm_delete_{match.get('match_id')}_{i}"
+                            if st.button("✅ Ja, slet", key=confirm_key, type="primary"):
+                                success = delete_pending_match(match.get('match_id'))
+                                if success:
+                                    st.success("🗑️ Ventende kamp slettet!")
+                                    # Clear the confirmation state
+                                    del st.session_state[f"confirm_delete_{match.get('match_id')}"]
+                                    st.rerun()
+                                else:
+                                    st.error("❌ Fejl ved sletning af kamp")
+                        
+                        with col_cancel:
+                            cancel_key = f"cancel_delete_{match.get('match_id')}_{i}"
+                            if st.button("❌ Annuller", key=cancel_key):
+                                # Clear the confirmation state
+                                del st.session_state[f"confirm_delete_{match.get('match_id')}"]
+                                st.rerun()
         
         st.markdown("---")
     

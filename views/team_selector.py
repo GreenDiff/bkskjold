@@ -4,8 +4,8 @@ import streamlit as st
 import random
 import json
 import os
-from datetime import datetime
-from utils.data_loader import load_member_data, get_training_accepted_players, initialize_fines_calculator
+from datetime import datetime, timezone, timedelta
+from utils.data_loader import load_member_data, get_training_accepted_players, initialize_fines_calculator, get_next_training_event
 from utils.github_storage import save_training_matches, auto_backup_on_change
 from intelligent_team_generator import IntelligentTeamGenerator
 
@@ -124,9 +124,53 @@ def complete_pending_match(match_id, winning_team):
         return False
 
 
-def display_player_row(player_name, player_data, team_color="#28a745"):
-    """Display a player in a compact row with small photo and name."""
-    col1, col2 = st.columns([1, 5])
+def swap_player_between_teams(player_name, from_team):
+    """Swap a player from one team to the other."""
+    try:
+        teams = st.session_state.generated_teams
+        if not teams:
+            return False
+            
+        team1 = teams['team1'].copy()
+        team2 = teams['team2'].copy()
+        
+        if from_team == 1 and player_name in team1:
+            # Move from team1 to team2
+            team1.remove(player_name)
+            team2.append(player_name)
+        elif from_team == 2 and player_name in team2:
+            # Move from team2 to team1
+            team2.remove(player_name)
+            team1.append(player_name)
+        else:
+            return False
+            
+        # Update teams in session state
+        st.session_state.generated_teams['team1'] = team1
+        st.session_state.generated_teams['team2'] = team2
+        
+        # Recalculate team balance if IntelligentTeamGenerator is available
+        try:
+            from intelligent_team_generator import IntelligentTeamGenerator
+            generator = IntelligentTeamGenerator()
+            generator.calculate_player_statistics()
+            balance_info = generator.get_team_balance_info(team1, team2)
+            st.session_state.team_balance_info = balance_info
+        except:
+            pass  # If balance calculation fails, just skip it
+            
+        return True
+    except Exception as e:
+        st.error(f"Fejl ved bytte af spiller: {e}")
+        return False
+
+
+def display_player_row(player_name, player_data, team_color="#28a745", team_number=None, show_swap=False):
+    """Display a player in a compact row with small photo, name, win rate, and optional swap button."""
+    if show_swap and team_number:
+        col1, col2, col3 = st.columns([1, 4, 1])
+    else:
+        col1, col2 = st.columns([1, 5])
     
     with col1:
         if player_data:
@@ -143,13 +187,39 @@ def display_player_row(player_name, player_data, team_color="#28a745"):
             st.image(default_image, width=40)
     
     with col2:
-        # Use smaller text for more compact display
-        st.markdown(f"**{player_name}**")
+        # Get win rate from session state if available
+        player_stats = st.session_state.get('player_statistics', {})
+        player_stat = player_stats.get(player_name, {})
+        
+        if player_stat and 'win_rate' in player_stat:
+            win_rate = player_stat['win_rate']
+            matches = player_stat.get('matches', 0)
+            # Display name with win rate percentage
+            if matches > 0:
+                st.markdown(f"**{player_name}** - {win_rate:.1%} ({matches} kampe)")
+            else:
+                st.markdown(f"**{player_name}** - Ny spiller")
+        else:
+            # For players without statistics (external players or no match history)
+            st.markdown(f"**{player_name}** - Ny spiller")
+    
+    # Add swap button if requested
+    if show_swap and team_number:
+        with col3:
+            swap_key = f"swap_{player_name}_{team_number}"
+            other_team = 2 if team_number == 1 else 1
+            if st.button("🔄", key=swap_key, help=f"Flyt til Hold {other_team}"):
+                success = swap_player_between_teams(player_name, team_number)
+                if success:
+                    st.rerun()
 
 
 
 def display_teams_layout(teams, player_dict):
-    """Display teams in a simple side-by-side layout."""
+    """Display teams in a simple side-by-side layout with player swap functionality."""
+    # Add header explaining swap functionality
+    st.info("💡 **Tip:** Klik på 🔄 knappen ved en spiller for at flytte dem til det andet hold")
+    
     # Display teams side by side
     col1, col2 = st.columns(2)
     
@@ -158,7 +228,7 @@ def display_teams_layout(teams, player_dict):
         if teams['team1']:
             for player in teams['team1']:
                 player_data = player_dict.get(player)
-                display_player_row(player, player_data, "#1f77b4")
+                display_player_row(player, player_data, "#1f77b4", team_number=1, show_swap=True)
         else:
             st.write("Ingen spillere på hold 1")
     
@@ -167,11 +237,11 @@ def display_teams_layout(teams, player_dict):
         if teams['team2']:
             for player in teams['team2']:
                 player_data = player_dict.get(player)
-                display_player_row(player, player_data, "#ff7f0e")
+                display_player_row(player, player_data, "#ff7f0e", team_number=2, show_swap=True)
         else:
             st.write("Ingen spillere på hold 2")
     
-    # Display reserves if any
+    # Display reserves if any (without swap functionality since reserves aren't on teams)
     if teams.get('remaining'):
         st.markdown("### ⚪ Reserve Spillere")
         for player in teams['remaining']:
@@ -204,8 +274,15 @@ def generate_teams_callback():
             import random
             random.shuffle(selected_players)
             
-            # Generate balanced teams using optimal algorithm
-            team1, team2, balance_info = generator.generate_smart_teams(selected_players, 'optimal')
+            # Get external/manual players for even distribution
+            external_players = st.session_state.get('manual_players', [])
+            
+            # Generate balanced teams using optimal algorithm with external player distribution
+            team1, team2, balance_info = generator.generate_smart_teams(
+                selected_players, 
+                'optimal', 
+                external_players=external_players
+            )
             
             # Handle remaining players - smart algorithms should create equal teams
             remaining = []
@@ -228,6 +305,9 @@ def generate_teams_callback():
             
             # Store balance information for display
             st.session_state.team_balance_info = balance_info
+            
+            # Store player statistics for display
+            st.session_state.player_statistics = generator.player_stats
             
             st.session_state.generated_teams = {
                 'team1': team1,
@@ -253,6 +333,14 @@ def generate_teams_callback():
             team2 = all_players[team_size:team_size*2]
             remaining = all_players[team_size*2:]
             
+            # Try to get player statistics even in fallback mode
+            try:
+                fallback_generator = IntelligentTeamGenerator()
+                fallback_generator.calculate_player_statistics()
+                st.session_state.player_statistics = fallback_generator.player_stats
+            except:
+                st.session_state.player_statistics = {}
+                
             st.session_state.generated_teams = {
                 'team1': team1,
                 'team2': team2,
@@ -485,7 +573,41 @@ def display_team_selector():
         
         # Available players from team roster - auto-selected based on training acceptance
         if member_data:
-            st.write("**Spillere til næste træning (fravælg utilgængelige):**")
+            # Get next training event details
+            training_event = get_next_training_event()
+            if training_event:
+                event_name = training_event.get('heading', 'Næste træning')
+                event_time = training_event.get('startTimestamp', '')
+                if event_time:
+                    try:
+                        # Parse and format the event time
+                        if isinstance(event_time, str):
+                            event_time_str = event_time
+                            if event_time_str.endswith('Z'):
+                                event_time_str = event_time_str[:-1] + '+00:00'
+                            # Parse as UTC datetime
+                            event_datetime_utc = datetime.fromisoformat(event_time_str)
+                            
+                            # Convert to Danish time (CET/CEST)
+                            # In September 2025, Denmark is in CEST (UTC+2)
+                            danish_offset = timedelta(hours=2)
+                            event_datetime_danish = event_datetime_utc.replace(tzinfo=None) + danish_offset
+                            
+                            # Format as Danish date and time
+                            formatted_time = event_datetime_danish.strftime("%d/%m/%Y kl. %H:%M")
+                            st.write(f"**Spillere til {event_name}** ({formatted_time})")
+                        else:
+                            # If event_time is already a datetime object
+                            formatted_time = event_time.strftime("%d/%m/%Y kl. %H:%M")
+                            st.write(f"**Spillere til {event_name}** ({formatted_time})")
+                    except Exception as e:
+                        print(f"Error formatting date: {e}, event_time: {event_time}, type: {type(event_time)}")
+                        st.write(f"**Spillere til {event_name}:**")
+                else:
+                    st.write(f"**Spillere til {event_name}:**")
+            else:
+                st.write("**Spillere til næste træning:**")
+            
             # Include both team members and manual players in the available options
             team_members = list(player_dict.keys())
             all_available_players = team_members + st.session_state.manual_players

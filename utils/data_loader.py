@@ -2,7 +2,7 @@
 
 import json
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 import streamlit as st
 from spond_integration import sync_data, FinesCalculator, SpondIntegration
 
@@ -55,3 +55,22 @@ def get_training_accepted_players():
             loop.close()
     
     return _fetch_accepted_players()
+
+@st.cache_data(ttl=300, show_spinner="Henter træningsinfo...")  # Cache for 5 minutes
+def get_next_training_event():
+    """Get the next training event with details"""
+    def _fetch_training_event():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            spond_integration = SpondIntegration()
+            event = loop.run_until_complete(spond_integration.get_next_training_event())
+            loop.run_until_complete(spond_integration.close())
+            return event
+        except Exception as e:
+            print(f"Error fetching training event: {e}")
+            return None
+        finally:
+            loop.close()
+    
+    return _fetch_training_event()

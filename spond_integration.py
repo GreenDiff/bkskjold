@@ -150,6 +150,29 @@ class SpondIntegration:
         except Exception as e:
             print(f"Error fetching training accepted players: {e}")
             return []
+    
+    async def get_next_training_event(self):
+        """Get the next training event details."""
+        if not self.session:
+            await self.initialize()
+            
+        try:
+            # Get future events
+            future_events = await self.get_future_events(days_ahead=7)
+            
+            # Find the next training session (look for "træning" or "training" in event name)
+            next_training = None
+            for event in sorted(future_events, key=lambda x: x.get('startTimestamp', '')):
+                event_name = event.get('heading', '').lower()
+                if 'træning' in event_name or 'training' in event_name:
+                    next_training = event
+                    break
+            
+            return next_training
+            
+        except Exception as e:
+            print(f"Error fetching next training event: {e}")
+            return None
 
 
 class FinesCalculator:

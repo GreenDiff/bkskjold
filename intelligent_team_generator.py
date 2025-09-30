@@ -287,25 +287,92 @@ class IntelligentTeamGenerator:
             'team2_players_stats': [(player, self.get_player_win_rate(player)) for player in team2]
         }
     
-    def generate_smart_teams(self, players: List[str], algorithm: str = "optimal") -> Tuple[List[str], List[str], Dict]:
+    def generate_smart_teams(self, players: List[str], algorithm: str = "optimal", external_players: List[str] = None) -> Tuple[List[str], List[str], Dict]:
         """
         Main function to generate smart, balanced teams.
         
         Args:
             players: List of all available players
             algorithm: "greedy" or "optimal"
+            external_players: List of external/manual players to distribute evenly
             
         Returns:
             Tuple of (team1, team2, balance_info)
         """
-        if algorithm == "greedy":
-            team1, team2 = self.generate_balanced_teams_greedy(players)
+        # Handle external players distribution first
+        if external_players:
+            team1, team2 = self.generate_balanced_teams_with_externals(players, external_players, algorithm)
         else:
-            team1, team2 = self.generate_balanced_teams_optimal(players)
+            if algorithm == "greedy":
+                team1, team2 = self.generate_balanced_teams_greedy(players)
+            else:
+                team1, team2 = self.generate_balanced_teams_optimal(players)
         
         balance_info = self.get_team_balance_info(team1, team2)
         
         return team1, team2, balance_info
+    
+    def generate_balanced_teams_with_externals(self, players: List[str], external_players: List[str], algorithm: str = "optimal") -> Tuple[List[str], List[str]]:
+        """
+        Generate balanced teams with external players distributed evenly.
+        
+        Args:
+            players: List of all available players
+            external_players: List of external/manual players to distribute evenly
+            algorithm: "greedy" or "optimal" for remaining players
+            
+        Returns:
+            Tuple of (team1, team2) with external players distributed evenly
+        """
+        # Separate external and regular players
+        regular_players = [p for p in players if p not in external_players]
+        actual_externals = [p for p in external_players if p in players]
+        
+        # Initialize teams
+        team1, team2 = [], []
+        
+        # Distribute external players evenly (alternate assignment)
+        for i, external_player in enumerate(actual_externals):
+            if i % 2 == 0:
+                team1.append(external_player)
+            else:
+                team2.append(external_player)
+        
+        # If we have remaining regular players, balance them using the chosen algorithm
+        if regular_players:
+            # Generate balanced teams for regular players
+            if algorithm == "greedy":
+                reg_team1, reg_team2 = self.generate_balanced_teams_greedy(regular_players)
+            else:
+                reg_team1, reg_team2 = self.generate_balanced_teams_optimal(regular_players)
+            
+            # Add regular players to teams, balancing total team sizes
+            current_team1_size = len(team1)
+            current_team2_size = len(team2)
+            
+            # Calculate how many regular players should go to each team
+            total_players = len(players)
+            target_team_size = total_players // 2
+            
+            # Determine how many regular players each team needs
+            team1_needs = max(0, target_team_size - current_team1_size)
+            team2_needs = max(0, target_team_size - current_team2_size)
+            
+            # Distribute regular players to reach target sizes
+            all_regular = reg_team1 + reg_team2
+            team1.extend(all_regular[:team1_needs])
+            team2.extend(all_regular[team1_needs:team1_needs + team2_needs])
+            
+            # Handle any remaining players (for odd total numbers)
+            remaining_regular = all_regular[team1_needs + team2_needs:]
+            if remaining_regular:
+                # Add to smaller team, or team1 if equal
+                if len(team1) <= len(team2):
+                    team1.extend(remaining_regular)
+                else:
+                    team2.extend(remaining_regular)
+        
+        return team1, team2
 
 
 def main():
