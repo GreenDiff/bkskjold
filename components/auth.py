@@ -42,8 +42,7 @@ def admin_login():
             else:
                 st.error('Ugyldige loginoplysninger! 🚫')
     
-    st.info(f'💡 **Standard loginoplysninger:** Brugernavn: `{app_config.ADMIN_USERNAME}`, Adgangskode: `{app_config.ADMIN_PASSWORD}`')
-    st.warning('⚠️ **Sikkerhedsnotat:** Skift disse loginoplysninger i app_config.py til produktion!')
+    st.info(f'💡 **Loginoplysninger:** Brugernavn: `{app_config.ADMIN_USERNAME}`, Adgangskode: `{app_config.ADMIN_PASSWORD}`')
 
 
 def admin_logout():
