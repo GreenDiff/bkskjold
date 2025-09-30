@@ -46,10 +46,11 @@
       "Nicklas Palmelund",
       "Magnus Brønd Rasmussen"
     ],
-    "winning_team": null,
+    "winning_team": 2,
     "created_at": "2025-09-30T14:18:34.510748",
     "match_id": "pending_20250930_141834_510787",
-    "status": "pending"
+    "status": "completed",
+    "completed_at": "2025-09-30T14:18:52.509870"
   },
   {
     "date": "2025-09-30T14:18:37.662403",
