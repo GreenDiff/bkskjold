@@ -80,9 +80,10 @@
       "Linus 2100",
       "Nicklas Palmelund"
     ],
-    "winning_team": null,
+    "winning_team": 1,
     "created_at": "2025-09-30T14:18:41.197363",
     "match_id": "pending_20250930_141841_197414",
-    "status": "pending"
+    "status": "completed",
+    "completed_at": "2025-09-30T14:18:48.227142"
   }
 ]
