@@ -88,5 +88,34 @@
     "match_id": "pending_20250930_141841_197414",
     "status": "completed",
     "completed_at": "2025-09-30T14:18:48.227142"
+  },
+  {
+    "date": "2025-09-30T15:49:07.096694",
+    "team1": [
+      "William Svendsen",
+      "Oscar Pedro",
+      "Alexander Frost",
+      "Lucas Johan Boesen",
+      "Julian Boserup",
+      "Nikolai Kyster Lund",
+      "Philip Rau-Andersen",
+      "Oliver Krusell",
+      "Nicklas Palmelund"
+    ],
+    "team2": [
+      "Lucas Thierry-Carstensen",
+      "Linus 2100",
+      "Markus Skafte Andersen",
+      "Christian Højby",
+      "Magnus Marker",
+      "Jonathan Balsov",
+      "Michael Jørgensen",
+      "Magnus Brønd Rasmussen",
+      "Tue Tordenstøvle"
+    ],
+    "winning_team": null,
+    "created_at": "2025-09-30T15:49:07.096694",
+    "match_id": "pending_20250930_154907_96732",
+    "status": "pending"
   }
 ]
