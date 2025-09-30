@@ -15,22 +15,5 @@
       "Jonathan Balsov"
     ],
     "status": "pending"
-  },
-  {
-    "date": "2025-09-30T13:14:14.841501",
-    "team1": [
-      "Magnus Brønd Rasmussen",
-      "Lucas Johan Boesen",
-      "Alexander Frost"
-    ],
-    "team2": [
-      "Nicklas Palmelund",
-      "Linus 2100",
-      "Oscar Pedro"
-    ],
-    "winning_team": null,
-    "created_at": "2025-09-30T13:14:14.841501",
-    "match_id": "pending_20250930_131414_841534",
-    "status": "pending"
   }
 ]
