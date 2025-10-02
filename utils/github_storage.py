@@ -72,7 +72,7 @@ def save_json_to_github(data, file_path: str, commit_message: str = None):
 def auto_backup_on_change(data, file_path: str, backup_message: str = None):
     """
     Automatisk backup når data ændres.
-    Bruger session state til at tracke ændringer.
+    Bruger session state til at tracke ændringer og git til backup.
     """
     # Create a unique key for this file's hash
     file_key = f"backup_hash_{os.path.basename(file_path)}"
@@ -84,15 +84,30 @@ def auto_backup_on_change(data, file_path: str, backup_message: str = None):
     
     # Check if data has changed
     if file_key not in st.session_state or st.session_state[file_key] != current_hash:
-        # Data has changed, save and backup
-        success = save_json_to_github(data, file_path, backup_message)
-        if success:
+        # Data has changed, use git auto-commit system
+        try:
+            from utils.git_utils import backup_data_file
+            
+            # Use the git backup system
+            data_type = os.path.splitext(os.path.basename(file_path))[0]  # e.g., "training_matches"
+            operation = backup_message or "update"
+            
+            backup_data_file(file_path, data_type, operation)
+            
             st.session_state[file_key] = current_hash
-            st.success(f"📂 Data gemt til GitHub: {os.path.basename(file_path)}")
-        else:
-            st.warning(f"⚠️ Kunne ikke gemme til GitHub: {os.path.basename(file_path)}")
-        
-        return success
+            st.success(f"📂 Data automatisk gemt til GitHub: {os.path.basename(file_path)}")
+            return True
+            
+        except Exception as e:
+            st.warning(f"⚠️ Auto-backup fejlede: {e}")
+            # Fallback to old GitHub API method
+            success = save_json_to_github(data, file_path, backup_message)
+            if success:
+                st.session_state[file_key] = current_hash
+                st.success(f"📂 Data gemt til GitHub (fallback): {os.path.basename(file_path)}")
+            else:
+                st.warning(f"⚠️ Kunne ikke gemme til GitHub: {os.path.basename(file_path)}")
+            return success
     
     return True  # No changes, no backup needed
 

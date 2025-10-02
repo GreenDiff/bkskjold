@@ -63,7 +63,7 @@ def get_fine_color(total_fine):
     if total_fine <= 100:
         return "#28a745"  # Green
     elif total_fine <= 500:
-        return "#ffc107"  # Yellow
+        return "#271cf0"  # Blue
     else:
         return "#dc3545"  # Red
 

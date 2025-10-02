@@ -196,6 +196,13 @@ class FinesCalculator:
         """Save fines data to file."""
         with open(app_config.DATABASE_FILE, 'w') as f:
             json.dump(self.fines_data, f, indent=2, default=str)
+        
+        # Auto-backup fines data to GitHub
+        try:
+            from utils.git_utils import backup_data_file
+            backup_data_file(app_config.DATABASE_FILE, "fines", "update")
+        except Exception as e:
+            print(f"Warning: Auto-backup of fines failed: {e}")
     
     def calculate_event_fines(self, event: Dict, members: List[Dict]) -> Dict[str, Dict]:
         """Calculate fines for a specific event."""
@@ -473,6 +480,13 @@ async def sync_data():
         
         # Update fines based on events
         fines_calculator.update_fines_for_events(events, members)
+        
+        # Auto-backup to GitHub after syncing data
+        try:
+            from utils.git_utils import backup_all_data
+            backup_all_data(f"sync data - {len(events)} events, {len(members)} members")
+        except Exception as e:
+            print(f"Warning: Auto-backup failed: {e}")
         
         return True, f"Synced {len(events)} events and {len(members)} members"
     
